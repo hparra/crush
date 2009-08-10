@@ -6,3 +6,5 @@
 bin-debug/*
 bin-release/*
 html-template/*
+Capfile
+config/*
