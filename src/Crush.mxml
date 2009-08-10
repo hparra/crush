@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="absolute"
+	width="0"
+	height="0"
+	preinitialize="onPreinitialize()"
+	initialize="onInitialize()"
+	creationComplete="onCreationComplete()"
+	applicationComplete="onApplicationComplete()">
+
+	<fab:FABridge xmlns:fab="bridge.*" />
+
+	<mx:Script>
+		<![CDATA[
+			private function onPreinitialize():void {}
+			private function onInitialize():void {}
+			private function onCreationComplete():void {}
+			private function onApplicationComplete():void {}
+		
+			public function getRemoteSharedObject(name:String, localPath:String, persistence:Object = false, secure:Boolean = false):SharedObject {
+				return SharedObject.getRemote(name, localPath, persistence, secure);
+			}
+			public function newNetConnection():NetConnection {
+				return new NetConnection();
+			}
+		]]>
+	</mx:Script>
+	
+</mx:Application>
