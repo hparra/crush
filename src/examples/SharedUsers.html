@@ -2,103 +2,85 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Crush: Shared Users</title>
-		<script type="text/javascript" src="http://marco.calit2.uci.edu/crush/FABridge.js"></script>
+		<script type="text/javascript" src="../FABridge.js"></script>
 		<script type="text/javascript">
 		
 			var crush;
 			var username;
+			var usersObject;
 		
+			// FABridge Callback
 			FABridge.addInitializationCallback("Crush", function() {
+				console.debug("FABridge initialization called back");
 				crush = FABridge.Crush.root();
-			});
-		
-			window.onload = function() {
+				
+				console.debug("Window loaded");
 				username = window.prompt("Username?");
 				document.getElementById("username").innerHTML = username;
 				
-				
-			};
-		
-		
-			function getUsername(nearID) {
-				for (i in friends)
-					if (friends.getData()[i].nearID == nearID)
-						return friends.getData()[i].username;
-			}
-		
+				onFABridgeInitialized();
+			});
+			
+			// "ActionScript 3"
 			function onFABridgeInitialized() {
-				trace("FABridge Initialized");
+				console.debug("FABridge Initialized");
 			
-				ramune = FABridge.Ramune.root();
-				fms = ramune.newNetConnection();
-			
+				fms = crush.newNetConnection();
+				
 				fms.addEventListener("netStatus", function(event) {
-					trace(event.getInfo().code);
+					console.debug(event.getInfo().code);
+					
 					switch (event.getInfo().code) {
 						case "NetConnection.Connect.Success" :
-							trace("Connected to FMS: " + fms.getUri());
-						
-							friends = ramune.getRemoteSharedObject("clients", fms.getUri());
-							friends.addEventListener("sync", function(sync_event) {
-								trace("Friends Synced");
+							console.debug("Connected to FMS: " + fms.getUri());
 
-								me = friends.getData()[username];
-							
-								// TODO: Make it's own function
-								$("#friends").html("");
-								for (i in friends.getData()) {
-									// TODO: [HACK] if they don't have an id they are not available
-									// TODO: [HACK] Don't include yourself
-									if (i != me.username && friends.getData()[i].nearID != "0") {
-										$$('div.friend.friend_spacer',
-											$$('div.friend_photo', $$('img', {src: "images/blank_face.gif", id: i})),
-											$$('div.friend_name', i),
-											{
-												id: friends.getData()[i].nearID
-												 }
-										).appendTo('#friends').bind("click", function() {
-											/* Next State */
-										
-											ramune.placeCall('test', this.id);
-										});
-									}
+							usersObject = crush.getRemoteSharedObject("clients", fms.getUri());
+							usersObject.addEventListener("sync", function(sync_event) {
+								console.debug("Users Synced");
+								
+								users = usersObject.getData();
+								current_users = document.getElementById("current_users");
+								current_users.innerHTML = "";
+
+								for (n in users) {
+									li = document.createElement('li');
+									li.innerHTML = n;
+									current_users.appendChild(li); // equal to 'users[i].username'
 								}
-							
 							});
-							friends.connect(fms);
-
-							jRamune.connect();
-
+							usersObject.connect(fms);
+							
 							break;
-						case "NetConnection.Connect.Closed": // NOTE: I think this is what's going wrong...
-							//fms.connect("rtmp://hbox.calit2.uci.edu/RamuneTest", username, password, "0");
+						case "NetConnection.Connect.Closed":
 							break;
-						case "NetConnection.Connect.Failed": // Bad Password?
-							trace("REJECTED");
-							window.location.href = "/";
+						case "NetConnection.Connect.Failed":
 							break;
 					}
 				});
-				//fms.connect("rtmp://hbox.calit2.uci.edu/RamuneTest", username, password, "0"); // TODO: Passkey for RamuneTest
-			
-				userServerURI = $(document).getUrlParam("userServerURI");
-				if (userServerURI == null)
-					userServerURI = "rtmp://hbox.calit2.uci.edu/RamuneTest";
-				fms.connect(userServerURI, username, password, "0");
-				// password = null; // NOTE: Bad, but we want to allow graceful reconnect
+				
+				fms.connect("rtmp://hbox.calit2.uci.edu/RamuneTest", username, "insomnia", "0");
 			}
 
 		</script>
 	</head>
 	<body scroll="no">
-		<div id="user">Username: <span id="username"></span></div>
-		<div id="current_users"></div>
 		
-		<!-- Crush -->
+		<h2>Username</h2>
+		<span id="username"></span>
+		<h2>Users</h2>
+		<ul id="current_users">
+		</ul>
+		
+		<!-- Crush SWF -->
 		<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="0" height="0">
-	        <param name="movie" value="http://marco.calit2.uci.edu/crush/crush.swf" />
+	        <param name="movie" value="../../bin-debug/Crush.swf" />
+	        <param name="allowScriptAccess" value="always" />
+			<param name="flashVars" value="bridgeName=Crush" />
 	        <!--[if !IE]>-->
-	        <object type="application/x-shockwave-flash" data="http://marco.calit2.uci.edu/crush/crush.swf" width="0" height="0">
+	        <object type="application/x-shockwave-flash" data="../../bin-debug/Crush.swf" width="0" height="0">
+		        <param name="movie" value="../../bin-debug/Crush.swf" />
+		        <param name="allowScriptAccess" value="always" />
+				<param name="flashVars" value="bridgeName=Crush" />
 	        <!--<![endif]-->
 	          <p>Alternative content</p>
 	        <!--[if !IE]>-->
