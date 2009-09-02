@@ -5,6 +5,9 @@
 		<script type="text/javascript" src="../FABridge.js"></script>
 		<script type="text/javascript">
 		
+			var SERVER_URI = "rtmp://claude.calit2.uci.edu/SharedUsers";
+			var SHARED_USERS_PASSWORD = "SHADOW";
+		
 			var crush;
 			var username;
 			var usersObject;
@@ -58,7 +61,7 @@
 					}
 				});
 				
-				fms.connect("rtmp://hbox.calit2.uci.edu/RamuneTest", username, "insomnia", "0");
+				fms.connect(SERVER_URI, username, SHARED_USERS_PASSWORD);
 			}
 
 		</script>
@@ -71,7 +74,13 @@
 		<ul id="current_users">
 		</ul>
 		
-		<!-- Crush SWF -->
+		<!--
+		Crush SWF. Twice cooked.
+		For FABridge to work you need:
+			allowScriptAccess parmeter
+			bridgeName variable
+		(See below)
+		-->
 		<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="0" height="0">
 	        <param name="movie" value="../../bin-debug/Crush.swf" />
 	        <param name="allowScriptAccess" value="always" />
